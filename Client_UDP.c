@@ -15,18 +15,14 @@ struct data_MSG {
 	char packMsg[1024];
 };
 
+
+
 int main(int argc, char **argv){
     int sockfd = socket(AF_INET,SOCK_DGRAM,0);
     if(sockfd<0){
         printf("Error creating socket\n");
         return 1;
     }
-
-
-    //typedef struct {
-      //  int SeqNum;
-        //char packMsg[1024];
-    //}data_MSG;
 
     //Keep----------
     //printf("Enter an IP Address: ");
