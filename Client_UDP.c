@@ -50,6 +50,17 @@ int main(int argc, char **argv){
     fgets(line,5000,stdin);
     sendto(sockfd,line,sizeof(line)+1,0,(struct sockaddr*)&serveraddr,sizeof(serveraddr));
     char reMessage[1024];
+
+	//recieve file transfer confirmation
+	//sleep(2);
+    	//int filesize;
+    	//int l = recvfrom(sockfd, (int*)&filesize,sizeof(filesize),0,(struct sockaddr*)&serveraddr,sizeof(serveraddr));
+	//if(l==-1) {
+	//	printf("File size didn't work");
+	//	return 1;
+	//}
+	//printf("File size recieved");
+
     //int numRec = recvfrom(sockfd,reMessage,sizeof(reMessage)+1,0,(struct sockaddr*)&serveraddr,&len);
 
         struct data_MSG InComingMSG;

@@ -11,7 +11,7 @@
 typedef struct {
         int SeqNum;
         char packMsg[1024];
-    }data_MSG;
+}data_MSG;
 
 void sendPackets(data_MSG temp, int sockfd, struct sockaddr_in clientaddr){
     printf("%i\n", temp.SeqNum);
@@ -27,7 +27,7 @@ int main(int argc, char **argv){
         data_MSG pak2;
         data_MSG pak3;
         data_MSG pak4;
-        pak0.SeqNum = 99;
+        pak0.SeqNum = 0;
         pak1.SeqNum = 1;
         pak2.SeqNum = 2;
         pak3.SeqNum = 3;
@@ -59,8 +59,6 @@ int main(int argc, char **argv){
 
     bind(sockfd,(struct sockaddr*)&serveraddr,sizeof(serveraddr));
 
-        
-        
 
     while(1){
         int len = sizeof(clientaddr);
@@ -68,9 +66,8 @@ int main(int argc, char **argv){
         int sizeByte=1024/sizeof(char);
         char line[1024];
         int n = recvfrom(sockfd,fileName,sizeof(fileName),0,(struct sockaddr*)&clientaddr,&len);
-        char Fsize;
-        
-        
+        int Fsize;
+
         if(n == -1){
             printf("Time out received\n");
         }else{
@@ -85,9 +82,12 @@ int main(int argc, char **argv){
 
             FILE *fp = fopen(fileName,"r");
             if(fp != NULL){
-                fseek (fp , 0 , SEEK_END);
-                Fsize = ftell (fp);
-                rewind (fp);
+                fseek(fp , 0 , SEEK_END);
+                Fsize = ftell(fp);
+                rewind(fp);
+
+		//confirm file trans
+		sendto(sockfd, (int*)&Fsize, sizeof(Fsize),0,(struct sockaddr*)&clientaddr, sizeof(clientaddr));
 
                 size_t NumSent = fread(pak0.packMsg,1,1024,fp);
                 //strcpy((pak0).packMsg,line);
