@@ -10,13 +10,27 @@
 
 typedef struct {
         int SeqNum;
+        int databit;
         char packMsg[1024];
 }data_MSG;
 
 void sendPackets(data_MSG temp, int sockfd, struct sockaddr_in clientaddr){
     printf("%i\n", temp.SeqNum);
+    temp.databit =1;
     sendto(sockfd,(struct data_MSG*) &temp,sizeof(temp),0,(struct sockaddr*)&clientaddr,sizeof(clientaddr));
     //printf("%d\n", temp.SeqNum);
+}
+
+void addToWindow( data_MSG* Window,  data_MSG addTo){
+    for(int x =0; x < 5 ;x++){
+        if(Window[x].databit == 0){
+            Window[x] = addTo;
+            break;
+        }
+        
+    }
+    
+
 }
 
 int main(int argc, char **argv){
@@ -89,13 +103,10 @@ int main(int argc, char **argv){
 		//confirm file trans
 		sendto(sockfd, (int*)&Fsize, sizeof(Fsize),0,(struct sockaddr*)&clientaddr, sizeof(clientaddr));
 
-                size_t NumSent = fread(pak0.packMsg,1,1024,fp);
-                //strcpy((pak0).packMsg,line);
-                //pak0.packMsg = line;                
-                fread(pak1.packMsg,1,1024,fp);
-                //strcpy((pak1).packMsg,line);                
-                fread(pak1.packMsg,1,1024,fp);
-                //strcpy((pak2).packMsg,line);
+                size_t NumSent = fread(pak0.packMsg,1,10,fp);
+                fread(pak1.packMsg,1,10,fp);                
+                fread(pak2.packMsg,1,10,fp);
+                
                 
                 
                 if(ferror(fp) != 0){

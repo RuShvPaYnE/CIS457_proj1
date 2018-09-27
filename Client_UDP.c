@@ -10,10 +10,33 @@ void saveToFile(){
 
 }
 
-struct data_MSG {
-	int SeqNum;
-	char packMsg[1024];
-};
+typedef struct {
+        int SeqNum;
+        int databit;
+        char packMsg[1024];
+}data_MSG;
+
+typedef struct {
+        int SeqNum;
+        
+}ACK;
+
+void sendACK(ACK temp, int sockfd, struct sockaddr_in serveraddr){
+    printf("%i\n", temp.SeqNum);
+    sendto(sockfd,(struct ACK*) &temp,sizeof(temp),0,(struct sockaddr*)&serveraddr,sizeof(serveraddr));
+}
+
+void addToWindow( data_MSG* Window, data_MSG addTo){
+    for(int x =0; x < 5 ;x++){
+        if(Window[x].databit == 0){
+            Window[x] = addTo;
+            break;
+        }
+        
+    }
+    
+
+}
 
 
 
@@ -63,12 +86,13 @@ int main(int argc, char **argv){
 
     //int numRec = recvfrom(sockfd,reMessage,sizeof(reMessage)+1,0,(struct sockaddr*)&serveraddr,&len);
 
-        struct data_MSG InComingMSG;
-        struct data_MSG pak0;
-        struct data_MSG pak1;
-        struct data_MSG pak2;
-        struct data_MSG pak3;
-        struct data_MSG pak4;
+        data_MSG InComingMSG;
+        data_MSG WINDOW[5];
+        data_MSG pak0;
+        data_MSG pak1;
+        data_MSG pak2;
+        data_MSG pak3;
+        data_MSG pak4;
         pak0.SeqNum = 0;
         pak1.SeqNum = 1;
         pak2.SeqNum = 2;
@@ -81,18 +105,25 @@ int main(int argc, char **argv){
         if( j != -1){
 
             //sprintf(RECIEVED,"%d",InComingMSG.SeqNum);
-            RECIEVED[InComingMSG.SeqNum%5] = InComingMSG.SeqNum;
+            
             //printf("SeqNum Received was: %d\n", RECIEVED[InComingMSG.SeqNum%5]);
             //printf("%s\n", InComingMSG.packMsg);
             printf("%d\n", InComingMSG.SeqNum);
+            if(InComingMSG.databit == 1){
+                RECIEVED[InComingMSG.SeqNum%5] = InComingMSG.SeqNum;
+                addToWindow(WINDOW,InComingMSG);
+                ACK currentACK;
+                currentACK.SeqNum = InComingMSG.SeqNum;
+                sendACK(currentACK,sockfd,serveraddr);
+            }
             
             FILE* fp;
             fp = fopen("NEWFILE.txt", "a");
             //printf("%s", InComingMSG.packMsg);
-	    fprintf(fp, "%s", InComingMSG.packMsg);
-	    //fputs(InComingMSG.packMsg, fp);
+	        fprintf(fp, "%s", InComingMSG.packMsg);
+	        //fputs(InComingMSG.packMsg, fp);
             //fwrite(InComingMSG.packMsg, sizeof(char), sizeof(InComingMSG.packMsg), fp);
-	    fclose(fp);
+	        fclose(fp);
     
         }else{
             printf("Waiting to recieve: ");
